@@ -28,11 +28,11 @@ function Assistant() {
   // const HF_API_TOKEN = process.env.REACT_APP_HF_API_TOKEN;
 
   // Initialize Groq client
-  const llm = new ChatGroq({
+  const llm = useMemo(() => {new ChatGroq({
     model: "llama-3.1-8b-instant",
     temperature: 0,
     apiKey: GROQ_API_KEY, // Ensure to set this environment variable
-  });
+  })},[]);
 
   // Refs
   const recognitionRef = useRef(null);
@@ -159,7 +159,7 @@ function Assistant() {
   };
 
   // Generate speech using Facebook's MMS TTS
-  const generateSpeech = async (text) => {
+  const generateSpeech = useCallback(() =>async (text) => {
     try {
       console.log("Generating speech with MMS TTS API");
       console.log("TEXT IS ",text)
@@ -205,7 +205,7 @@ function Assistant() {
       // Fallback to browser's built-in TTS
       fallbackSpeakResponse(text);
     }
-  };
+  },[]);
 
   // Process speech with Groq LLM
   const processWithGroq = useCallback(async (text) => {
@@ -289,7 +289,7 @@ function Assistant() {
       // Use fallback browser TTS if Groq TTS fails
       fallbackSpeakResponse(errorMessage);
     }
-  },[ASSISTANT_PERSONA, chatHistory, speed]);
+  },[ASSISTANT_PERSONA, chatHistory, speed, generateSpeech, llm]);
 
   // Initialize speech recognition on component mount
   useEffect(() => {
