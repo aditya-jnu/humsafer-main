@@ -159,6 +159,55 @@ function Assistant() {
     setShowHistory((prev) => !prev);
   };
 
+  // Generate speech using Facebook's MMS TTS
+  const generateSpeech = async (text) => {
+    try {
+      console.log("Generating speech with MMS TTS API");
+      console.log("TEXT IS ",text)
+      setStatus("Generating voice...");
+
+      const response = await axios.post(
+        'https://humsafer-21nh.vercel.app/api/tts',
+        { text },
+        {
+          responseType: 'arraybuffer'
+        }
+      );
+
+      // Convert the audio response to a URL
+      const blob = new Blob([response.data], { type: "audio/wav" });
+      const audioUrl = URL.createObjectURL(blob);
+      
+      // Create a new Audio instance for this response
+      const audio = new Audio();
+      audio.src = audioUrl;
+      
+      // Set up event listeners
+      audio.onplay = () => {
+        setStatus("Speaking...");
+      };
+
+      audio.onended = () => {
+        setStatus("Ready");
+        URL.revokeObjectURL(audioUrl); // Clean up the URL
+      };
+
+      audio.onerror = () => {
+        console.error("Audio playback error");
+        setStatus("Audio Error");
+        URL.revokeObjectURL(audioUrl); // Clean up the URL
+      };
+
+      // Play the audio
+      console.log("Playing audio response");
+      await audio.play();
+    } catch (error) {
+      console.error("Error generating speech with MMS TTS:", error);
+      // Fallback to browser's built-in TTS
+      fallbackSpeakResponse(text);
+    }
+  };
+
   // Process speech with Groq LLM
   const processWithGroq = useCallback(async (text) => {
     console.log("Processing with Groq:", text);
@@ -343,54 +392,7 @@ function Assistant() {
     };
   },[silenceTimer, processWithGroq]);
 
-  // Generate speech using Facebook's MMS TTS
-  const generateSpeech = async (text) => {
-    try {
-      console.log("Generating speech with MMS TTS API");
-      console.log("TEXT IS ",text)
-      setStatus("Generating voice...");
-
-      const response = await axios.post(
-        'https://humsafer-21nh.vercel.app/api/tts',
-        { text },
-        {
-          responseType: 'arraybuffer'
-        }
-      );
-
-      // Convert the audio response to a URL
-      const blob = new Blob([response.data], { type: "audio/wav" });
-      const audioUrl = URL.createObjectURL(blob);
-      
-      // Create a new Audio instance for this response
-      const audio = new Audio();
-      audio.src = audioUrl;
-      
-      // Set up event listeners
-      audio.onplay = () => {
-        setStatus("Speaking...");
-      };
-
-      audio.onended = () => {
-        setStatus("Ready");
-        URL.revokeObjectURL(audioUrl); // Clean up the URL
-      };
-
-      audio.onerror = () => {
-        console.error("Audio playback error");
-        setStatus("Audio Error");
-        URL.revokeObjectURL(audioUrl); // Clean up the URL
-      };
-
-      // Play the audio
-      console.log("Playing audio response");
-      await audio.play();
-    } catch (error) {
-      console.error("Error generating speech with MMS TTS:", error);
-      // Fallback to browser's built-in TTS
-      fallbackSpeakResponse(text);
-    }
-  };
+  
 
   // Fallback TTS using browser's built-in speech synthesis
   const fallbackSpeakResponse = (text) => {
