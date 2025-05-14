@@ -5,11 +5,7 @@ const cors = require("cors");
 require('dotenv').config()
 
 const app = express();
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
-}));
+app.use(cors());
 app.use(bodyParser.json());
 
 const API_KEY = process.env.API_KEY;
@@ -42,11 +38,11 @@ app.post("/api/tts", async (req, res) => {
     console.log("Success in converting")
   } catch (error) {
    console.error("TTS Error:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data?.toString('utf8'),
-      headers: error.response?.headers
-    });
+  message: error.message,
+  status: error.response?.status,
+  data: error.response?.data?.toString('utf8'),
+  headers: error.response?.headers
+});
     res.status(500).send("TTS failed");
   }
 });
@@ -55,9 +51,4 @@ app.get("/api/test", (req, res) => {
   res.send("Hello");
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
-});
-
-module.exports = app;
+app.listen(5000, () => console.log("Server running on http://localhost:5000"));

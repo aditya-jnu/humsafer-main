@@ -3,7 +3,6 @@ import axios from "axios";
 import { ChatGroq } from "@langchain/groq";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { useCallback } from 'react';
-import { useMemo } from "react";
 
 function Assistant() {
   // State management
@@ -29,11 +28,11 @@ function Assistant() {
   // const HF_API_TOKEN = process.env.REACT_APP_HF_API_TOKEN;
 
   // Initialize Groq client
-  const llm = useMemo(() => {new ChatGroq({
+  const llm = new ChatGroq({
     model: "llama-3.1-8b-instant",
     temperature: 0,
     apiKey: GROQ_API_KEY, // Ensure to set this environment variable
-  })},[GROQ_API_KEY]);
+  });
 
   // Refs
   const recognitionRef = useRef(null);
@@ -160,14 +159,14 @@ function Assistant() {
   };
 
   // Generate speech using Facebook's MMS TTS
-  const generateSpeech = useCallback(() =>async (text) => {
+  const generateSpeech = async (text) => {
     try {
       console.log("Generating speech with MMS TTS API");
       console.log("TEXT IS ",text)
       setStatus("Generating voice...");
 
       const response = await axios.post(
-        'https://humsafer-21nh.vercel.app/api/tts',
+        'https://humsafer-main.onrender.com/api/tts',
         { text },
         {
           responseType: 'arraybuffer'
@@ -206,10 +205,10 @@ function Assistant() {
       // Fallback to browser's built-in TTS
       fallbackSpeakResponse(text);
     }
-  },[]);
+  }
 
   // Process speech with Groq LLM
-  const processWithGroq = useCallback(async (text) => {
+  const processWithGroq = async(text) => {
     console.log("Processing with Groq:", text);
     setStatus("Processing with Groq...");
 
@@ -290,7 +289,7 @@ function Assistant() {
       // Use fallback browser TTS if Groq TTS fails
       fallbackSpeakResponse(errorMessage);
     }
-  },[ASSISTANT_PERSONA, chatHistory, speed, generateSpeech, llm]);
+  };
 
   // Initialize speech recognition on component mount
   useEffect(() => {
@@ -549,6 +548,7 @@ function Assistant() {
 
         <button className="bg-red-500 text-white px-4 py-2 rounded mb-6 hover:bg-red-600 transition"
           onClick={() => {
+            console.log("hi")
           const hindiText = "मैं कैसा हूँ? हाँ हाँ, अभी हम लगभग ५० मील प्रति घंटे की रफ्तार से चल रहे हैं। सब ठीक है न? कहीं ट्रक का मूड ख़राब तो नहीं है? बता दो, मैं हूँ न। चलते रहो, मुस्कुराते रहो!";
           generateSpeech(hindiText);
           }}
