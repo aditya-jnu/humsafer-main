@@ -33,7 +33,7 @@ function Assistant() {
     model: "llama-3.1-8b-instant",
     temperature: 0,
     apiKey: GROQ_API_KEY, // Ensure to set this environment variable
-  })},[]);
+  })},[GROQ_API_KEY]);
 
   // Refs
   const recognitionRef = useRef(null);
