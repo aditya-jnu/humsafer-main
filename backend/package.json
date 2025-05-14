@@ -6,9 +6,9 @@
     "node": "18.x"
   },
   "scripts": {
-    "start": "node api/index.js",
-    "dev": "nodemon api/index.js",
-    "vercel-build": "echo hello"
+  "start": "node api/index.js",
+  "dev": "nodemon api/index.js",
+  "build": "echo Skipping build step"
   },
   "keywords": [],
   "author": "",
