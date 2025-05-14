@@ -289,7 +289,7 @@ function Assistant() {
       // Use fallback browser TTS if Groq TTS fails
       fallbackSpeakResponse(errorMessage);
     }
-  },[ASSISTANT_PERSONA, chatHistory, generateSpeech, llm, speed]);
+  },[ASSISTANT_PERSONA, chatHistory, speed]);
 
   // Initialize speech recognition on component mount
   useEffect(() => {
